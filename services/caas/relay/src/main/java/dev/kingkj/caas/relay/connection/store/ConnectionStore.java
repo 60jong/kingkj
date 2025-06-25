@@ -1,5 +1,6 @@
-package dev.kingkj.caas.relay.connection;
+package dev.kingkj.caas.relay.connection.store;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.Socket;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Socket Pool을 이용하기 위해 Queue(LinkedList)를 사용해
  * Socket 객체를 저장한다.
  */
+@Slf4j
 @Component
 public class ConnectionStore {
 
@@ -37,6 +39,7 @@ public class ConnectionStore {
         connections.computeIfAbsent(id, k -> new LinkedList<>())
                 .add(socket);
 
+        log.debug("New connection({}) saved.", id);
         return connections.get(id).size();
     }
 }

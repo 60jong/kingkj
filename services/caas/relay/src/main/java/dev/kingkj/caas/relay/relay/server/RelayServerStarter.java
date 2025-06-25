@@ -1,6 +1,6 @@
 package dev.kingkj.caas.relay.relay.server;
 
-import dev.kingkj.caas.relay.connection.ConnectionStore;
+import dev.kingkj.caas.relay.connection.store.ConnectionStore;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +11,23 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class RelayServerStarter {
-    @Value("${caas.relay.server.port}")
-    private int port;
 
-    @Autowired
-    private ConnectionStore relayConnectionStore;
+    private final int port;
+    private final ConnectionStore connectionStore;
+
+    public RelayServerStarter(
+            @Value("${caas.relay.server.port}") int port,
+            ConnectionStore relayConnectionStore
+    ) {
+        this.port = port;
+        this.connectionStore = relayConnectionStore;
+    }
 
     @PostConstruct
     public void startServer() {
         Thread.ofPlatform()
                 .name("relay-server-t")
-                .unstarted(() -> new RelayServer(port, relayConnectionStore).run())
+                .unstarted(() -> new RelayServer(port, connectionStore).run())
                 .start();
     }
 }
